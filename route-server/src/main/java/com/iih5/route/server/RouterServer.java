@@ -9,6 +9,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
+
 public class RouterServer {
     private static Logger logger = LoggerFactory.getLogger(RouterServer.class);
     private int port = 23568;
@@ -52,9 +54,9 @@ public class RouterServer {
     public void start() {
         try {
             channelFuture = bootstrap.bind(port).sync();
-            logger.info("begin bind port: " + port);
-            logger.info("test link: http://127.0.0.1:" + port + '/');
-        } catch (InterruptedException e) {
+            logger.info("监听端口： " + port);
+            logger.debug("测试地址: http://"+ InetAddress.getLocalHost().getHostAddress()+":" + port + '/');
+        } catch (Exception e) {
             logger.error("shutdown: ", e);
             close();
         }

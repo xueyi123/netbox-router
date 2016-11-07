@@ -34,11 +34,11 @@ public class ServerSessionHandler extends Handler {
     private WebSocketServerHandshaker handshaker;
 
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("建立连接");
+        logger.debug("建立连接");
     }
 
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("断开连接,解除session");
+        logger.debug("断开连接,解除session");
         SessionManager.getInstance().deleteSession(ctx.channel());
     }
 
@@ -141,7 +141,7 @@ public class ServerSessionHandler extends Handler {
                 SessionManager.getInstance().createSession(ctx.channel(), list);
             } else {
                 String label = arr0;
-                if (Constant.SPECIAL_NODE && Constant.SPECIAL_NODE_START){
+                if (Constant.SPECIAL_NODE_START){
                     SessionManager.getInstance().broadcastToAllCluster(newFullPackData);
                 }else {
                     if (Main.client !=null ){
@@ -154,6 +154,7 @@ public class ServerSessionHandler extends Handler {
         }
         if (frame instanceof TextWebSocketFrame) {
             String fullPackData = ((TextWebSocketFrame) frame).text();
+            logger.debug("<<<<<receive from user: "+fullPackData);
             String arr[] = fullPackData.split("#", 2);
             if (arr.length < 2) return;
             if ("~".equals(arr[0])) {
@@ -161,13 +162,16 @@ public class ServerSessionHandler extends Handler {
                 SessionManager.getInstance().createSession(ctx.channel(), list);
             } else {
                 String label = arr[0];
-                if (Constant.SPECIAL_NODE && Constant.SPECIAL_NODE_START){
+                if (Constant.SPECIAL_NODE_START){
+                    logger.debug("本节点是高可用服务端，广播到集群其他节点");
                     SessionManager.getInstance().broadcastToAllCluster(fullPackData);
                 }else {
                     if (Main.client !=null ){
+                        logger.debug("本节点是高可用客户端，发往集群高可用服务主节点");
                         Main.client.send(fullPackData);
                     }
                 }
+                logger.debug("返回给本节点的用户");
                 SessionManager.getInstance().broadcastToAllSession(label, fullPackData);
             }
             return;

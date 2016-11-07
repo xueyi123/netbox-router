@@ -29,11 +29,11 @@ public class ServerClusterHandler extends Handler {
     private static final String WEBSOCKET_PATH = "/websocket";
     private WebSocketServerHandshaker handshaker;
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("建立连接");
+        logger.debug("建立连接");
         SessionManager.getInstance().addClusterNode(ctx.channel());
     }
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.info("断开连接");
+        logger.debug("断开连接");
         SessionManager.getInstance().delClusterNode(ctx.channel());
     }
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -117,6 +117,7 @@ public class ServerClusterHandler extends Handler {
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf fullPackData = bw.content();
+            logger.debug("<<<<<<<receive from cluster binary ... ");
             SessionManager.getInstance().broadcastToAllClusterNotMe(fullPackData.copy(),ctx.channel());
             short length = fullPackData.readShort();
             byte[] cnt = fullPackData.readBytes(length).array();
@@ -126,9 +127,9 @@ public class ServerClusterHandler extends Handler {
         }
         if (frame instanceof TextWebSocketFrame) {
             String fullPackData = ((TextWebSocketFrame) frame).text();
+            logger.debug("<<<<<<<receive from cluster text = "+fullPackData);
             String arr[] = fullPackData.split("#", 2);
             if (arr.length < 2) return;
-
             SessionManager.getInstance().broadcastToAllClusterNotMe(fullPackData,ctx.channel());
             SessionManager.getInstance().broadcastToAllSession(arr[0],arr[1]);
         }

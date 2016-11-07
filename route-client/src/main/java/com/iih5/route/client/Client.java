@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Client {
 	Logger logger = LoggerFactory.getLogger(Client.class);
@@ -34,6 +35,7 @@ public class Client {
 	private URI uri = null;
 	private Timer timer = null;
 	private LinkedList<String> urls = null;
+	private int connectErrorCount = 0;
 	/**
 	 * Client
 	 * @param handler
@@ -74,12 +76,12 @@ public class Client {
 			@Override
 			public void run() {
 				if (channel == null){
-					logger.info("断线重连。。。");
+					logger.debug("进入断线重连。。。");
 					disConnect();
 					connect();
 				}
 			}
-		},5000,1500);
+		},500,1500);
 	}
 
 	/**
@@ -91,13 +93,14 @@ public class Client {
 			uri = new URI(System.getProperty("url",url));
 			channelFuture = bootstrap.connect(uri.getHost(), uri.getPort()).sync();
 		} catch (Exception e) {
-			clientHandler.connectError(e ,timer);
+			connectErrorCount++;
+			clientHandler.connectError(e ,timer,connectErrorCount);
 		}
 	}
 
 	public void connect(){
 		String url = urls.pop();
-		logger.info("尝试当前连接："+url);
+		logger.debug("尝试当前连接："+url);
 		connect(url);
 		urls.add(url);
 	}
