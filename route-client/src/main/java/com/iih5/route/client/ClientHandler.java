@@ -10,6 +10,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
 
+import java.nio.charset.Charset;
+
 public class ClientHandler extends SimpleChannelInboundHandler<Object> {
     private WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
@@ -48,8 +50,14 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
             } else {
                 if (Client.textLabels != null) {
                     ByteBuf data = Unpooled.buffer();
-                    data.writeBytes(Utils.stringToBinary(Client.serverPwd));
-                    data.writeBytes(Utils.stringToBinary(JSON.toJSONString(Client.textLabels)));
+                    //pwd
+                    byte[] d = Client.serverPwd.getBytes("UTF-8");
+                    data.writeShort(d.length);
+                    data.writeBytes(d);
+                    //labels
+                    byte[] c = JSON.toJSONString(Client.textLabels).getBytes("UTF-8");
+                    data.writeShort(c.length);
+                    data.writeBytes(c);
                     ctx.channel().writeAndFlush(new BinaryWebSocketFrame(data));
                 }
             }
@@ -64,7 +72,8 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf content = bw.content();
             if (Client.clientHandler != null) {
-                String label = Utils.binaryToString(content);
+                byte[] b = content.readBytes(content.readShort()).array();
+                String label = new String(b, Charset.forName("UTF-8"));
                 Client.clientHandler.onMessage(label, content.array());
             }
         } else {

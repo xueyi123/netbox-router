@@ -1,5 +1,6 @@
 package com.iih5.route.client;
 
+import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -52,7 +53,9 @@ public class Client {
 		clientHandler = handler;
 		init();
 	}
-
+	public void setServerPwd(String pwd){
+		serverPwd = pwd;
+	}
 	/**
 	 * 设置协议类型，默认是text协议
 	 * @param type
@@ -127,10 +130,16 @@ public class Client {
 	 * @param content
      */
 	public void publish(String label,byte[] content){
-		ByteBuf data = Unpooled.buffer();
-		data.writeBytes(Utils.stringToBinary(label));
-		data.writeBytes(content);
-		channel.writeAndFlush(new BinaryWebSocketFrame(data));
+		try {
+			ByteBuf data = Unpooled.buffer();
+			byte[] c = label.getBytes("UTF-8");
+			data.writeShort(c.length);
+			data.writeBytes(c);
+			data.writeBytes(content);
+			channel.writeAndFlush(new BinaryWebSocketFrame(data));
+		} catch (UnsupportedEncodingException e) {
+			logger.error("",e);
+		}
 	}
 
 	/**
