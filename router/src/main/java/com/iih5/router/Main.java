@@ -64,5 +64,7 @@ public class Main {
                 Constant.CLUSTER_HA = HAMode.HA;
             }
         }
+        String pwd = PropertyConf.get("SERVER.PWD");
+        Constant.SERVER_PWD = pwd;
     }
 }

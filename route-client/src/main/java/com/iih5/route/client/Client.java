@@ -31,6 +31,7 @@ public class Client {
 	public static Handler clientHandler = null;
 	public static String[] textLabels = null;
 	public static Integer protoType = ProtoType.TEXT;
+	public static String serverPwd = "";
 	private Bootstrap bootstrap = null;
 	private ChannelFuture channelFuture = null;
 	private URI uri = null;
@@ -116,7 +117,7 @@ public class Client {
 	 * @param content
      */
 	public void publish(String label ,String content) {
-		String pack = label+"#"+content;
+		String pack = label+"\n"+content;
 		channel.writeAndFlush(new TextWebSocketFrame(pack));
 	}
 

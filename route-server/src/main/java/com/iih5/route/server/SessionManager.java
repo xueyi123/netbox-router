@@ -157,4 +157,13 @@ public class SessionManager {
         }
     }
 
+    /**
+     * 是否包含次Session
+     * @param channel
+     * @return
+     */
+    public boolean containSession(Channel channel){
+        return channelMap.containsKey(channel);
+    }
+
 }

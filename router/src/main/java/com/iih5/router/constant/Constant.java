@@ -20,5 +20,8 @@ public class Constant {
      * 以高可用的方式启动,默认不是高可用节点，而是个普通集群节点
      */
     public static String CLUSTER_HA = "";
-
+    /**
+     * 服务连接验证密码
+     */
+    public static String SERVER_PWD = null;
 }

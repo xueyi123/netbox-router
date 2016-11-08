@@ -9,11 +9,8 @@ import io.netty.channel.ChannelPromise;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.websocketx.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ClientHandler extends SimpleChannelInboundHandler<Object> {
-    private static Logger logger = LoggerFactory.getLogger(ClientHandler.class);
     private WebSocketClientHandshaker handshaker;
     private ChannelPromise handshakeFuture;
 
@@ -45,13 +42,13 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
             Client.clientHandler.connect(ctx.channel());
             if (Client.protoType == ProtoType.TEXT) {
                 if (Client.textLabels != null) {
-                    String pack = "~#" + JSON.toJSONString(Client.textLabels);
+                    String pack = Client.serverPwd+"\n" + JSON.toJSONString(Client.textLabels);
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(pack));
                 }
             } else {
                 if (Client.textLabels != null) {
                     ByteBuf data = Unpooled.buffer();
-                    data.writeBytes(Utils.stringToBinary("~"));
+                    data.writeBytes(Utils.stringToBinary(Client.serverPwd));
                     data.writeBytes(Utils.stringToBinary(JSON.toJSONString(Client.textLabels)));
                     ctx.channel().writeAndFlush(new BinaryWebSocketFrame(data));
                 }
@@ -73,7 +70,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
         } else {
             String content = ((TextWebSocketFrame) frame).text();
             if (Client.clientHandler != null) {
-                String arr[] = content.split("#", 2);
+                String arr[] = content.split("\n", 2);
                 if (arr != null && arr.length == 2) {
                     Client.clientHandler.onMessage(arr[0], arr[1]);
                 }

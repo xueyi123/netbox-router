@@ -18,6 +18,7 @@ import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.Charset;
 import java.util.List;
@@ -129,36 +130,46 @@ public class ServerSessionHandler extends Handler {
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf fullPackData = bw.content();
-            ByteBuf newFullPackData = fullPackData.copy();
-            byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
-            String arr0 = new String(cnt, Charset.forName("UTF-8"));
-            if ("~".equals(arr0)) {
-                byte[] content = fullPackData.readBytes(fullPackData.readShort()).array();
-                String arr1 = new String(content, Charset.forName("UTF-8"));
-                List<String> list = JSON.parseArray(arr1, String.class);
-                SessionManager.getInstance().createSession(ctx.channel(), list);
-            } else {
-                String label = arr0;
+            logger.debug("<<<<<receive from user: "+fullPackData);
+            if (SessionManager.getInstance().containSession(ctx.channel())){
+                ByteBuf newFullPackData = fullPackData.copy();
                 if (Constant.SPECIAL_NODE_START){
+                    logger.debug("本节点是高可用服务端，广播到集群其他节点");
                     SessionManager.getInstance().broadcastToAllCluster(newFullPackData);
                 }else {
                     if (Main.client != null ){
+                        logger.debug("本节点是高可用客户端，发往集群高可用服务主节点");
                         Main.client.send(newFullPackData);
                     }
                 }
+                logger.debug("返回给本节点的用户");
+                byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
+                String label = new String(cnt, Charset.forName("UTF-8"));
                 SessionManager.getInstance().broadcastToAllSession(label, fullPackData);
+            }else {
+                byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
+                String arr0 = new String(cnt, Charset.forName("UTF-8"));
+                if (StringUtils.isEmpty(Constant.SERVER_PWD) || Constant.SERVER_PWD.equals(arr0)) {
+                    byte[] content = fullPackData.readBytes(fullPackData.readShort()).array();
+                    String arr1 = new String(content, Charset.forName("UTF-8"));
+                    List<String> list = JSON.parseArray(arr1, String.class);
+                    SessionManager.getInstance().createSession(ctx.channel(), list);
+                    logger.debug("密码验证成功");
+                }else {
+                    logger.warn("密码验证失败");
+                    ctx.channel().disconnect().awaitUninterruptibly();
+                    ctx.channel().close();
+                }
             }
             return;
         }
         if (frame instanceof TextWebSocketFrame) {
             String fullPackData = ((TextWebSocketFrame) frame).text();
             logger.debug("<<<<<receive from user: "+fullPackData);
-            String arr[] = fullPackData.split("#", 2);
-            if (arr.length < 2) return;
-            if ("~".equals(arr[0])) {
-                List<String> list = JSON.parseArray(arr[1], String.class);
-                SessionManager.getInstance().createSession(ctx.channel(), list);
-            } else {
+            if (SessionManager.getInstance().containSession(ctx.channel())){
+                //已登陆
+                String arr[] = fullPackData.split("\n", 2);
+                if (arr.length < 2) return;
                 String label = arr[0];
                 if (Constant.SPECIAL_NODE_START){
                     logger.debug("本节点是高可用服务端，广播到集群其他节点");
@@ -171,6 +182,19 @@ public class ServerSessionHandler extends Handler {
                 }
                 logger.debug("返回给本节点的用户");
                 SessionManager.getInstance().broadcastToAllSession(label, fullPackData);
+            }else {
+                logger.debug("登陆验证,特殊分割点\"\\n\"");
+                String arr[] = fullPackData.split("\n", 2);
+                if (arr.length < 2) return;
+                if (StringUtils.isEmpty(Constant.SERVER_PWD) || Constant.SERVER_PWD.equals(arr[0])) {
+                    List<String> list = JSON.parseArray(arr[1], String.class);
+                    SessionManager.getInstance().createSession(ctx.channel(), list);
+                    logger.debug("密码验证成功");
+                } else {
+                    logger.warn("密码验证失败");
+                    ctx.channel().disconnect().awaitUninterruptibly();
+                    ctx.channel().close();
+                }
             }
             return;
         }

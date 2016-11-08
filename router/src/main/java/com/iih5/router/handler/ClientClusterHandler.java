@@ -15,7 +15,6 @@ import com.iih5.route.server.SessionManager;
 import com.iih5.route.server.SimpleServer;
 import com.iih5.router.constant.Constant;
 import com.iih5.router.constant.HAMode;
-import com.iih5.router.utils.PropertyConf;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
