@@ -111,6 +111,7 @@ public class ServerSessionHandler extends Handler {
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf fullPackData = bw.content();
+            ByteBuf newPackData = fullPackData.copy();
             logger.debug("<<<<<receive from user: "+fullPackData);
             if (SessionManager.getInstance().containSession(ctx.channel())){
                 ByteBuf newFullPackData = fullPackData.copy();
@@ -126,7 +127,7 @@ public class ServerSessionHandler extends Handler {
                 logger.debug("返回给本节点的用户");
                 byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
                 String label = new String(cnt, Charset.forName("UTF-8"));
-                SessionManager.getInstance().broadcastToAllSession(label, fullPackData);
+                SessionManager.getInstance().broadcastToAllSession(label, newPackData);
             }else {
                 byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
                 String arr0 = new String(cnt, Charset.forName("UTF-8"));

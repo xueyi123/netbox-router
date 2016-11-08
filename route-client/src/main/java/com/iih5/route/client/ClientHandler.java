@@ -70,11 +70,13 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
         }
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
-            ByteBuf content = bw.content();
+            ByteBuf buf = bw.content();
             if (Client.clientHandler != null) {
-                byte[] b = content.readBytes(content.readShort()).array();
+                byte[] b = buf.readBytes(buf.readShort()).array();
                 String label = new String(b, Charset.forName("UTF-8"));
-                Client.clientHandler.onMessage(label, content.array());
+                byte[] content = new byte[buf.readableBytes()];
+                buf.readBytes(content);
+                Client.clientHandler.onMessage(label,content);
             }
         } else {
             String content = ((TextWebSocketFrame) frame).text();
