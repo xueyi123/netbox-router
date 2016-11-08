@@ -20,6 +20,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -29,7 +30,7 @@ public class Client {
 	public static Channel channel = null;
 	public static Handler clientHandler = null;
 	public static String[] textLabels = null;
-	public static byte[] binaryLabels = null;
+	public static Integer protoType = ProtoType.TEXT;
 	private Bootstrap bootstrap = null;
 	private ChannelFuture channelFuture = null;
 	private URI uri = null;
@@ -50,15 +51,13 @@ public class Client {
 		clientHandler = handler;
 		init();
 	}
+
 	/**
-	 * Client
-	 * @param handler
-	 * @param labels 订阅标签数组（必须转化为数组后再 utf-8 binary）
-	 */
-	public Client(Handler handler,byte[] labels){
-		clientHandler = handler;
-		binaryLabels = labels;
-		init();
+	 * 设置协议类型，默认是text协议
+	 * @param type
+     */
+	public void setProtoType(Integer type){
+		protoType = type;
 	}
 	private void init(){
 		bootstrap = new Bootstrap();
@@ -114,23 +113,22 @@ public class Client {
 	/**
 	 * 发布内容
 	 * @param label
-	 * @param text
+	 * @param content
      */
-	public void publish(String label ,String text) {
-		String pack = label+"#"+text;
+	public void publish(String label ,String content) {
+		String pack = label+"#"+content;
 		channel.writeAndFlush(new TextWebSocketFrame(pack));
 	}
 
 	/**
 	 * 发布内容
 	 * @param label
-	 * @param binary
+	 * @param content
      */
-	public void publish(byte[] label,byte[] binary){
+	public void publish(String label,byte[] content){
 		ByteBuf data = Unpooled.buffer();
-		data.writeShort(label.length);
-		data.writeBytes(label);
-		data.writeBytes(binary);
+		data.writeBytes(Utils.stringToBinary(label));
+		data.writeBytes(content);
 		channel.writeAndFlush(new BinaryWebSocketFrame(data));
 	}
 

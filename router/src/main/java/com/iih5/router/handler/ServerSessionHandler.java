@@ -130,12 +130,10 @@ public class ServerSessionHandler extends Handler {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf fullPackData = bw.content();
             ByteBuf newFullPackData = fullPackData.copy();
-            short length = fullPackData.readShort();
-            byte[] cnt = fullPackData.readBytes(length).array();
+            byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
             String arr0 = new String(cnt, Charset.forName("UTF-8"));
             if ("~".equals(arr0)) {
-                short len = fullPackData.readShort();
-                byte[] content = fullPackData.readBytes(len).array();
+                byte[] content = fullPackData.readBytes(fullPackData.readShort()).array();
                 String arr1 = new String(content, Charset.forName("UTF-8"));
                 List<String> list = JSON.parseArray(arr1, String.class);
                 SessionManager.getInstance().createSession(ctx.channel(), list);
@@ -144,11 +142,11 @@ public class ServerSessionHandler extends Handler {
                 if (Constant.SPECIAL_NODE_START){
                     SessionManager.getInstance().broadcastToAllCluster(newFullPackData);
                 }else {
-                    if (Main.client !=null ){
+                    if (Main.client != null ){
                         Main.client.send(newFullPackData);
                     }
                 }
-                SessionManager.getInstance().broadcastToAllSession(label, newFullPackData);
+                SessionManager.getInstance().broadcastToAllSession(label, fullPackData);
             }
             return;
         }

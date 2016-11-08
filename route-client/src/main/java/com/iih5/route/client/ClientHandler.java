@@ -43,21 +43,17 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
 
             Client.channel = ch;
             Client.clientHandler.connect(ctx.channel());
-            if (Client.textLabels != null) {
-                String pack = "~#" + JSON.toJSONString(Client.textLabels);
-                ctx.channel().writeAndFlush(new TextWebSocketFrame(pack));
-            }
-            if (Client.binaryLabels != null) {
-                try {
-                    byte[] head = "~".getBytes("UTF-8");
+            if (Client.protoType == ProtoType.TEXT) {
+                if (Client.textLabels != null) {
+                    String pack = "~#" + JSON.toJSONString(Client.textLabels);
+                    ctx.channel().writeAndFlush(new TextWebSocketFrame(pack));
+                }
+            } else {
+                if (Client.textLabels != null) {
                     ByteBuf data = Unpooled.buffer();
-                    data.writeShort(head.length);
-                    data.writeBytes(head);
-                    data.writeShort(Client.binaryLabels.length);
-                    data.writeBytes(Client.binaryLabels);
+                    data.writeBytes(Utils.stringToBinary("~"));
+                    data.writeBytes(Utils.stringToBinary(JSON.toJSONString(Client.textLabels)));
                     ctx.channel().writeAndFlush(new BinaryWebSocketFrame(data));
-                } catch (Exception e) {
-                    logger.error("订阅失败", e);
                 }
             }
             return;
@@ -69,17 +65,16 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
         }
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
-            ByteBuf data = bw.content();
-            short length = data.readShort();
-            byte[] arr0 = data.readBytes(length).array();
+            ByteBuf content = bw.content();
             if (Client.clientHandler != null) {
-                Client.clientHandler.onMessage(arr0, data.array());
+                String label = Utils.binaryToString(content);
+                Client.clientHandler.onMessage(label, content.array());
             }
         } else {
-            String request = ((TextWebSocketFrame) frame).text();
-            String arr[] = request.split("#", 2);
-            if (arr != null && arr.length == 2) {
-                if (Client.clientHandler != null) {
+            String content = ((TextWebSocketFrame) frame).text();
+            if (Client.clientHandler != null) {
+                String arr[] = content.split("#", 2);
+                if (arr != null && arr.length == 2) {
                     Client.clientHandler.onMessage(arr[0], arr[1]);
                 }
             }

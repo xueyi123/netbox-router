@@ -50,12 +50,12 @@ public class ClientClusterHandler extends Handler {
         logger.info("断开连接");
     }
 
-    public void onMessage(String channel, String message) {
-        SessionManager.getInstance().broadcastToAllSession(channel,message);
+    public void onMessage(String label, String message) {
+        SessionManager.getInstance().broadcastToAllSession(label,message);
     }
 
     @Override
-    public void onMessage(byte[] channel, byte[] message) {
+    public void onMessage(String label, byte[] message) {
 
 
 
