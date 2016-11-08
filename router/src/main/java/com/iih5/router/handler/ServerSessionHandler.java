@@ -34,11 +34,11 @@ public class ServerSessionHandler extends Handler {
     private WebSocketServerHandshaker handshaker;
 
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.debug("建立连接");
+        logger.info("建立连接");
     }
 
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.debug("断开连接,解除session");
+        logger.info("断开连接,解除session");
         SessionManager.getInstance().deleteSession(ctx.channel());
     }
 

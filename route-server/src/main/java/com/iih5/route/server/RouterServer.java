@@ -55,7 +55,7 @@ public class RouterServer {
         try {
             channelFuture = bootstrap.bind(port).sync();
             logger.info("监听端口： " + port);
-            logger.debug("测试地址: http://"+ InetAddress.getLocalHost().getHostAddress()+":" + port + '/');
+            logger.info("测试地址: http://"+ InetAddress.getLocalHost().getHostAddress()+":" + port + '/');
         } catch (Exception e) {
             logger.error("shutdown: ", e);
             close();

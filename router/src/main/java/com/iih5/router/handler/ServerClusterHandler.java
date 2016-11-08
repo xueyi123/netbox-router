@@ -29,11 +29,11 @@ public class ServerClusterHandler extends Handler {
     private static final String WEBSOCKET_PATH = "/websocket";
     private WebSocketServerHandshaker handshaker;
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.debug("建立连接");
+        logger.info("建立连接");
         SessionManager.getInstance().addClusterNode(ctx.channel());
     }
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        logger.debug("断开连接");
+        logger.info("断开连接");
         SessionManager.getInstance().delClusterNode(ctx.channel());
     }
     public void channelReadComplete(ChannelHandlerContext ctx) {

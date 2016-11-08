@@ -27,7 +27,7 @@ public class ClientClusterHandler extends Handler {
 
     @Override
     public void connect(Channel channel) {
-       logger.debug("连接成功");
+       logger.info("连接成功");
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ClientClusterHandler extends Handler {
 
     @Override
     public void disconnect(Channel channel) {
-        logger.debug("断开连接");
+        logger.info("断开连接");
     }
 
     public void onMessage(String channel, String message) {
