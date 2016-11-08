@@ -58,25 +58,6 @@ public class ServerClusterHandler extends Handler {
             sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, BAD_REQUEST));
             return;
         }
-        if (req.getMethod() != GET) {
-            sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, FORBIDDEN));
-            return;
-        }
-        if ("/".equals(req.getUri())) {
-            ByteBuf content = TestPage.getContent(getWebSocketLocation(req));
-            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, OK, content);
-
-            res.headers().set(CONTENT_TYPE, "text/html; charset=UTF-8");
-            HttpHeaders.setContentLength(res, content.readableBytes());
-
-            sendHttpResponse(ctx, req, res);
-            return;
-        }
-        if ("/favicon.ico".equals(req.getUri())) {
-            FullHttpResponse res = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
-            sendHttpResponse(ctx, req, res);
-            return;
-        }
         WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(getWebSocketLocation(req), null, false);
         handshaker = wsFactory.newHandshaker(req);
         if (handshaker == null) {
@@ -127,7 +108,7 @@ public class ServerClusterHandler extends Handler {
         if (frame instanceof TextWebSocketFrame) {
             String fullPackData = ((TextWebSocketFrame) frame).text();
             logger.debug("<<<<<<<receive from cluster text = "+fullPackData);
-            String arr[] = fullPackData.split("\n", 2);
+            String arr[] = fullPackData.split(" # ", 2);
             if (arr.length < 2) return;
             SessionManager.getInstance().broadcastToAllClusterNotMe(fullPackData,ctx.channel());
             SessionManager.getInstance().broadcastToAllSession(arr[0],arr[1]);

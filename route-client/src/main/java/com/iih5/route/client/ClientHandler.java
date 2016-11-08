@@ -42,7 +42,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
             Client.clientHandler.connect(ctx.channel());
             if (Client.protoType == ProtoType.TEXT) {
                 if (Client.textLabels != null) {
-                    String pack = Client.serverPwd+"\n" + JSON.toJSONString(Client.textLabels);
+                    String pack = Client.serverPwd+" # " + JSON.toJSONString(Client.textLabels);
                     ctx.channel().writeAndFlush(new TextWebSocketFrame(pack));
                 }
             } else {
@@ -70,7 +70,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<Object> {
         } else {
             String content = ((TextWebSocketFrame) frame).text();
             if (Client.clientHandler != null) {
-                String arr[] = content.split("\n", 2);
+                String arr[] = content.split(" # ", 2);
                 if (arr != null && arr.length == 2) {
                     Client.clientHandler.onMessage(arr[0], arr[1]);
                 }

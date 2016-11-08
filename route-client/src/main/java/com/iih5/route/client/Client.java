@@ -117,7 +117,7 @@ public class Client {
 	 * @param content
      */
 	public void publish(String label ,String content) {
-		String pack = label+"\n"+content;
+		String pack = label+" # "+content;
 		channel.writeAndFlush(new TextWebSocketFrame(pack));
 	}
 
