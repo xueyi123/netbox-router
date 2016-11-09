@@ -34,8 +34,8 @@ public class ClientClusterHandler extends Handler {
         logger.warn("连接异常， 已尝试连接次数："+connectErrorCount);
         //如果是高可用代理节点，当无法连接对方时关闭连接，然后启动内部服务，让别人来连接自己
         if (Constant.CLUSTER_HA.equals(HAMode.HA) && connectErrorCount>=2 && !Constant.SPECIAL_NODE_START){
-            logger.debug("检测到自己是特殊节点!");
-            logger.debug("》》》》无法检测到集群内部高可用监听，启动本集群高可用代理节点");
+            logger.info("检测到自己是特殊节点!");
+            logger.info("》》》》无法检测到集群内部高可用监听，启动本集群高可用代理节点");
             timer.cancel();
             RouterServer clusterServer = SimpleServer.createNewServer(Constant.HA_PORT);
             clusterServer.addHandler(new ServerClusterHandler());
