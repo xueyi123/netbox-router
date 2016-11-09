@@ -18,15 +18,12 @@ import io.netty.handler.codec.http.websocketx.*;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static io.netty.handler.codec.http.HttpHeaders.Names.HOST;
-import static io.netty.handler.codec.http.HttpMethod.GET;
-import static io.netty.handler.codec.http.HttpResponseStatus.*;
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 public class ServerSessionHandler extends Handler {
@@ -131,7 +128,7 @@ public class ServerSessionHandler extends Handler {
             }else {
                 byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
                 String arr0 = new String(cnt, Charset.forName("UTF-8"));
-                if (StringUtils.isEmpty(Constant.SERVER_PWD) || Constant.SERVER_PWD.equals(arr0)) {
+                if (Constant.SERVER_PWD == null || Constant.SERVER_PWD.equals("") || Constant.SERVER_PWD.equals(arr0)) {
                     byte[] content = fullPackData.readBytes(fullPackData.readShort()).array();
                     String arr1 = new String(content, Charset.forName("UTF-8"));
                     List<String> list = JSON.parseArray(arr1, String.class);
@@ -167,7 +164,7 @@ public class ServerSessionHandler extends Handler {
             }else {
                 logger.debug("登陆验证,特殊分割点[ # ]");
                 String arr[] = fullPackData.split(" # ", 2);
-                if (StringUtils.isEmpty(Constant.SERVER_PWD) || Constant.SERVER_PWD.equals(arr[0])) {
+                if (Constant.SERVER_PWD == null || Constant.SERVER_PWD.equals("") || Constant.SERVER_PWD.equals(arr[0])) {
                     List<String> list = JSON.parseArray(arr[1], String.class);
                     SessionManager.getInstance().createSession(ctx.channel(), list);
                     logger.debug("密码验证成功");

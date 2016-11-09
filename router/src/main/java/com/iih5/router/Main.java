@@ -8,6 +8,7 @@ import com.iih5.router.constant.HAMode;
 import com.iih5.router.constant.ServiceMode;
 import com.iih5.router.handler.ClientClusterHandler;
 import com.iih5.router.handler.ServerSessionHandler;
+import com.iih5.router.utils.LogUtil;
 import com.iih5.router.utils.PropertyConf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,7 @@ public class Main {
         while (true) Thread.sleep(5000000);
     }
     static void mainCMD(String[] args){
+        LogUtil.init();
         if (args.length == 0 || args.length == 1){
             Constant.SERVICE_MODE = ServiceMode.SIMPLE;
             if (args.length == 1){
