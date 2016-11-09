@@ -9,7 +9,7 @@
         <version>1.0</version>
     </parent>
     <groupId>iih5.com</groupId>
-    <artifactId>route-server</artifactId>
+    <artifactId>router-server</artifactId>
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
