@@ -53,16 +53,6 @@ public class Client {
 		clientHandler = handler;
 		init();
 	}
-	public void setServerPwd(String pwd){
-		serverPwd = pwd;
-	}
-	/**
-	 * 设置协议类型，默认是text协议
-	 * @param type
-     */
-	public void setProtoType(Integer type){
-		protoType = type;
-	}
 	private void init(){
 		bootstrap = new Bootstrap();
 		bootstrap.group(new NioEventLoopGroup()).channel(NioSocketChannel.class)
@@ -87,6 +77,27 @@ public class Client {
 		},500,1500);
 	}
 
+	/**
+	 * 设置服务器密码
+	 * @param pwd
+     */
+	public void setServerPwd(String pwd){
+		serverPwd = pwd;
+	}
+	/**
+	 * 设置协议类型，默认是text协议
+	 * @param type
+	 */
+	public void setProtoType(Integer type){
+		protoType = type;
+	}
+	/**
+	 * 设置负载均衡urls
+	 * @param urls
+     */
+	public void setUrls(LinkedList<String> urls){
+		this.urls = urls;
+	}
 	/**
 	 * 连接
 	 * @param url
@@ -140,31 +151,6 @@ public class Client {
 		} catch (UnsupportedEncodingException e) {
 			logger.error("",e);
 		}
-	}
-
-	/**
-	 * 发送消息
-	 * @param data
-     */
-	public void send(String data){
-		channel.writeAndFlush(new TextWebSocketFrame(data));
-	}
-
-	/**
-	 * 发送消息
-	 * @param data
-     */
-	public void send(byte[] data){
-		ByteBuf d = Unpooled.buffer();
-		d.writeBytes(data);
-		channel.writeAndFlush(new BinaryWebSocketFrame(d));
-	}
-	public void send(ByteBuf data){
-		channel.writeAndFlush(new BinaryWebSocketFrame(data));
-	}
-
-	public void setUrls(LinkedList<String> urls){
-		this.urls = urls;
 	}
 	class WebSocketInitializer extends ChannelInitializer<SocketChannel> {
 		@Override

@@ -121,7 +121,7 @@ public class ServerSessionHandler extends Handler {
                 }else {
                     if (Main.client != null ){
                         logger.debug("本节点是高可用客户端，发往集群高可用服务主节点");
-                        Main.client.send(newFullPackData);
+                        Main.client.channel.writeAndFlush(new BinaryWebSocketFrame(newFullPackData));
                     }
                 }
                 logger.debug("返回给本节点的用户");
@@ -159,7 +159,7 @@ public class ServerSessionHandler extends Handler {
                 }else {
                     if (Main.client !=null ){
                         logger.debug("本节点是高可用客户端，发往集群高可用服务主节点");
-                        Main.client.send(fullPackData);
+                        Main.client.channel.writeAndFlush(new TextWebSocketFrame(fullPackData));
                     }
                 }
                 logger.debug("返回给本节点的用户");
