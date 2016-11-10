@@ -108,22 +108,23 @@ public class ServerSessionHandler extends Handler {
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf fullPackData = bw.content();
-            ByteBuf newPackData = fullPackData.retain();
             logger.debug("<<<<<receive from user: "+fullPackData);
+            ByteBuf newPackData1 = fullPackData.copy();
+            ByteBuf newPackData2 = fullPackData.copy();
             if (SessionManager.getInstance().containSession(ctx.channel())){
                 if (Constant.SPECIAL_NODE_START){
                     logger.debug("本节点是高可用服务端，广播到集群其他节点");
-                    SessionManager.getInstance().broadcastToAllCluster(newPackData);
+                    SessionManager.getInstance().broadcastToAllCluster(newPackData1);
                 }else {
                     if (Main.client != null ){
                         logger.debug("本节点是高可用客户端，发往集群高可用服务主节点");
-                        Main.client.channel.writeAndFlush(new BinaryWebSocketFrame(newPackData));
+                        Main.client.channel.writeAndFlush(new BinaryWebSocketFrame(newPackData1));
                     }
                 }
                 logger.debug("返回给本节点的用户");
                 byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
                 String label = new String(cnt, Charset.forName("UTF-8"));
-                SessionManager.getInstance().broadcastToAllSession(label, newPackData);
+                SessionManager.getInstance().broadcastToAllSession(label, newPackData2);
             }else {
                 byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
                 String arr0 = new String(cnt, Charset.forName("UTF-8"));

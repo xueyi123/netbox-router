@@ -98,12 +98,13 @@ public class ServerClusterHandler extends Handler {
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf fullPackData = bw.content();
-            ByteBuf newPackData = fullPackData.retain();
+            ByteBuf newPackData1 = fullPackData.copy();
+            ByteBuf newPackData2 = fullPackData.copy();
             logger.debug("<<<<<<<receive from cluster binary ... ");
-            SessionManager.getInstance().broadcastToAllClusterNotMe(newPackData,ctx.channel());
+            SessionManager.getInstance().broadcastToAllClusterNotMe(newPackData1,ctx.channel());
             byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
             String label = new String(cnt, Charset.forName("UTF-8"));
-            SessionManager.getInstance().broadcastToAllSession(label,newPackData);
+            SessionManager.getInstance().broadcastToAllSession(label,newPackData2);
             return;
         }
         if (frame instanceof TextWebSocketFrame) {
