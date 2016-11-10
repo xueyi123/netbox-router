@@ -71,7 +71,7 @@ public class SessionManager {
         CopyOnWriteArraySet<Channel> channels =  SessionManager.getInstance().getClusterNodeList();
         if (channels != null){
             for (Channel channel:channels) {
-                channel.writeAndFlush(new BinaryWebSocketFrame(fullPackData));
+                channel.writeAndFlush(new BinaryWebSocketFrame(fullPackData.copy()));
             }
         }
     }
@@ -80,7 +80,7 @@ public class SessionManager {
         if (channels != null){
             for (Channel channel:channels) {
                 if (!channel.equals(myChannel)){
-                    channel.writeAndFlush(new BinaryWebSocketFrame(fullPackData));
+                    channel.writeAndFlush(new BinaryWebSocketFrame(fullPackData.copy()));
                 }
             }
         }
@@ -152,7 +152,7 @@ public class SessionManager {
         CopyOnWriteArraySet<Channel> channels = getSubscribeSessionList(label);
         if (channels != null){
             for (Channel channel:channels) {
-                channel.writeAndFlush(new BinaryWebSocketFrame(fullPackData));
+                channel.writeAndFlush(new BinaryWebSocketFrame(fullPackData.copy()));
             }
         }
     }
