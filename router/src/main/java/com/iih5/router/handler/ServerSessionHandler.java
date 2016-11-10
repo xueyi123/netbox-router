@@ -108,17 +108,16 @@ public class ServerSessionHandler extends Handler {
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf fullPackData = bw.content();
-            ByteBuf newPackData = fullPackData.copy();
+            ByteBuf newPackData = fullPackData.retain();
             logger.debug("<<<<<receive from user: "+fullPackData);
             if (SessionManager.getInstance().containSession(ctx.channel())){
-                ByteBuf newFullPackData = fullPackData.copy();
                 if (Constant.SPECIAL_NODE_START){
                     logger.debug("本节点是高可用服务端，广播到集群其他节点");
-                    SessionManager.getInstance().broadcastToAllCluster(newFullPackData);
+                    SessionManager.getInstance().broadcastToAllCluster(newPackData);
                 }else {
                     if (Main.client != null ){
                         logger.debug("本节点是高可用客户端，发往集群高可用服务主节点");
-                        Main.client.channel.writeAndFlush(new BinaryWebSocketFrame(newFullPackData));
+                        Main.client.channel.writeAndFlush(new BinaryWebSocketFrame(newPackData));
                     }
                 }
                 logger.debug("返回给本节点的用户");

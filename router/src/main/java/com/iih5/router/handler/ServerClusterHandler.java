@@ -98,7 +98,7 @@ public class ServerClusterHandler extends Handler {
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame bw = (BinaryWebSocketFrame) frame;
             ByteBuf fullPackData = bw.content();
-            ByteBuf newPackData = fullPackData.copy();
+            ByteBuf newPackData = fullPackData.retain();
             logger.debug("<<<<<<<receive from cluster binary ... ");
             SessionManager.getInstance().broadcastToAllClusterNotMe(newPackData,ctx.channel());
             byte[] cnt = fullPackData.readBytes(fullPackData.readShort()).array();
