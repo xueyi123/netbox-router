@@ -1,0 +1,12 @@
+###2.运行 java -jar router.jar 或 java -jar router.jar 9980 即可启动一个单例router
+
+####启动集群
+比如router集群由7个实例组成,其中带HA标识这俩个会作为集群内部分发中心，命令第一个参数表示监听端口，第二个参数表示是否最为集群模式启动，1表示集群模式，第三个参数HA
+表示这个实例本身又同时承担集群内部分发中心。
+java -jar router.jar 9981 1 HA  （注：这两个HA实例启动时必须保证其中一个启动成功之后再启动另外一个）
+java -jar router.jar 9982 1 HA  （注：这两个HA实例启动时必须保证其中一个启动成功之后再启动另外一个）
+java -jar router.jar 9983 1
+java -jar router.jar 9984 1
+java -jar router.jar 9985 1
+java -jar router.jar 9986 1
+java -jar router.jar 9987 1
