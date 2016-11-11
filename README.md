@@ -28,11 +28,11 @@
 ###Java Client API 已提供，其他语言的后面陆续给出
 
 ###客户端SDK使用
-####    <dependency>
-####         <groupId>com.iih5</groupId>
-####         <artifactId>router-client</artifactId>
-####         <version>1.0</version>
-####     </dependency>
+<br/>    //<dependency>
+<br/>    //     <groupId>com.iih5</groupId>
+<br/>    //     <artifactId>router-client</artifactId>
+<br/>    //     <version>1.0</version>
+<br/>    //  </dependency>
 
 <br/>    Client client = new Client(new Handler() {
 <br/>                         @Override
