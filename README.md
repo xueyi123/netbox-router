@@ -28,6 +28,7 @@
 ###Java Client API 已提供，其他语言的后面陆续给出
 
 ###客户端SDK使用
+    //在pom.xml加入依赖
         <dependency>
             <groupId>com.iih5</groupId>
             <artifactId>router-client</artifactId>
