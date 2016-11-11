@@ -28,11 +28,11 @@
 ###Java Client API 已提供，其他语言的后面陆续给出
 
 ###客户端SDK使用
-<br/>    <dependency>
-<br/>        <groupId>com.iih5</groupId>
-<br/>        <artifactId>router-client</artifactId>
-<br/>        <version>1.0</version>
-<br/>    </dependency>
+####    <dependency>
+####         <groupId>com.iih5</groupId>
+####         <artifactId>router-client</artifactId>
+####         <version>1.0</version>
+####     </dependency>
 
 <br/>    Client client = new Client(new Handler() {
 <br/>                         @Override
@@ -46,6 +46,7 @@
 <br/>                         @Override
 <br/>                         public void onMessage(String label, byte[] message) {//接受到的二进制消息}
 <br/>                     },"BROADCAST");//订阅消息
+
 <br/>                     client.setServerPwd("KY^KD($^%RFGKD%^FJGJPO(#^*");//如果router服务设置密码的话，必须添加密码链接
 <br/>                     LinkedList<String> list = new LinkedList<String>();
 <br/>                     list.add("ws://192.168.4.221:9988/websocket"); //router集群地址，可以添加多个
