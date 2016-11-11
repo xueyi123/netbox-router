@@ -28,32 +28,31 @@
 ###Java Client API 已提供，其他语言的后面陆续给出
 
 ###客户端SDK使用
-    <dependency>
-    <groupId>com.iih5</groupId>
-    <artifactId>router-client</artifactId>
-    <version>1.0</version>
-    </dependency>
-
+        <dependency>
+            <groupId>com.iih5</groupId>
+            <artifactId>router-client</artifactId>
+            <version>1.0</version>
+        </dependency>
+    //代码示例
     Client client = new Client(new Handler() {
-                                @Override
-                               public void connect(Channel channel) {}
-                              @Override
-                                public void connectError(Exception e, Timer timer, int i) {}
-                            @Override
-                           public void disconnect(Channel channel) {}
-                           @Override
-                            public void onMessage(String label, String message) {//接受到的文本消息}
-                             @Override
-                           public void onMessage(String label, byte[] message) {//接受到的二进制消息}
-                         },"BROADCAST");//订阅消息
-
-                         client.setServerPwd("KY^KD($^%RFGKD%^FJGJPO(#^*");//如果router服务设置密码的话，必须添加密码链接
-                         LinkedList<String> list = new LinkedList<String>();
-                         list.add("ws://192.168.4.221:9988/websocket"); //router集群地址，可以添加多个
-                         client.setUrls(list);
-                         client.connect();//会断线重连，如果多个地址则轮询多个地址链接。。起到负载均衡作用
-                         Thread.sleep(300);//注：因为是connect是异步的，所以如果希望立刻发布的话，必须先等300毫秒左右
-                         client.publish("BROADCAST","hello,router !!!!!");//发布消息
+        @Override
+        public void connect(Channel channel) {}
+        @Override
+        public void connectError(Exception e, Timer timer, int i) {}
+        @Override
+        public void disconnect(Channel channel) {}
+        @Override
+        public void onMessage(String label, String message) {//接受到的文本消息}
+        @Override
+        public void onMessage(String label, byte[] message) {//接受到的二进制消息}
+        },"BROADCAST");//订阅消息
+    client.setServerPwd("KY^KD($^%RFGKD%^FJGJPO(#^*");//如果router服务设置密码的话，必须添加密码链接
+    LinkedList<String> list = new LinkedList<String>();
+    list.add("ws://192.168.4.221:9988/websocket"); //router集群地址，可以添加多个
+    client.setUrls(list);
+    client.connect();//会断线重连，如果多个地址则轮询多个地址链接。。起到负载均衡作用
+    Thread.sleep(300);//注：因为是connect是异步的，所以如果希望立刻发布的话，必须先等300毫秒左右
+    client.publish("BROADCAST","hello,router !!!!!");//发布消息
 
 
 
