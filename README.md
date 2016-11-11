@@ -45,7 +45,7 @@
         public void onMessage(String label, String message) {//接受到的文本消息}
         @Override
         public void onMessage(String label, byte[] message) {//接受到的二进制消息}
-        },"BROADCAST");//订阅消息
+        },"BROADCAST","CMD","helloMe","10003234");//订阅消息
     client.setServerPwd("KY^KD($^%RFGKD%^FJGJPO(#^*");//如果router服务设置密码的话，必须添加密码链接
     LinkedList<String> list = new LinkedList<String>();
     list.add("ws://192.168.4.221:9988/websocket"); //router集群地址，可以添加多个
